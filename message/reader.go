@@ -1,4 +1,4 @@
-package protocol
+package message
 
 import (
 	"bufio"
@@ -7,18 +7,18 @@ import (
 	"tcpchat/model"
 )
 
-type MessageReader struct {
+type JsonMessageReader struct {
 	reader *bufio.Reader
 }
 
-func NewMessageReader(reader io.Reader) *MessageReader {
-	return &MessageReader{
+func NewMessageReader(reader io.Reader) *JsonMessageReader {
+	return &JsonMessageReader{
 		reader: bufio.NewReader(reader),
 	}
 }
 
-func (r *MessageReader) ReadMessage() (*model.Message, error) {
-	line, err := r.reader.ReadBytes('\n')	
+func (r *JsonMessageReader) ReadMessage() (*model.Message, error) {
+	line, err := r.reader.ReadBytes('\n')
 	if err != nil {
 		return nil, err
 	}
@@ -28,4 +28,7 @@ func (r *MessageReader) ReadMessage() (*model.Message, error) {
 		return nil, err
 	}
 	return &message, nil
+}
+
+type TLVMessageReader struct {
 }
