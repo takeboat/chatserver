@@ -1,4 +1,4 @@
-package client
+package model
 
 type Client interface {
 	Dial(address string) error
