@@ -11,7 +11,10 @@ type JsonMessageWriter struct {
 }
 
 func NewJsonMessageWriter(writer io.Writer) *JsonMessageWriter {
-	return &JsonMessageWriter{writer: writer}
+	jmw := &JsonMessageWriter{
+		writer: writer,
+	}
+	return jmw
 }
 func (w *JsonMessageWriter) WriteMessage(message *model.Message) error {
 	data, err := json.Marshal(message)

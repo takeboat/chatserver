@@ -2,6 +2,7 @@ package model
 
 type Server interface {
 	Listen(port string) error
-	Broadcast(message string) error
-	Close() error
+	BroadCast(message *Message) error
+	Close() error 
+	Start() 
 }

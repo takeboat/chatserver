@@ -3,13 +3,13 @@ package model
 import "time"
 
 const (
-	Join_Message MessageType = iota
-	Chat_Message
-	SetName_Message
-	Leave_Message
-	Error_Message
-	System_Message
-	Unknown_Message
+	JoinMessage MessageType = iota
+	ChatMessage
+	SetNameMessage
+	LeaveMessage
+	ErrorMessage
+	SystemMessage
+	UnknownMessage
 )
 
 type MessageType int
