@@ -11,7 +11,7 @@ type JsonMessageReader struct {
 	reader *bufio.Reader
 }
 
-func NewMessageReader(reader io.Reader) *JsonMessageReader {
+func NewJsonMessageReader(reader io.Reader) *JsonMessageReader {
 	return &JsonMessageReader{
 		reader: bufio.NewReader(reader),
 	}
