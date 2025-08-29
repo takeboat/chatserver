@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -40,15 +41,20 @@ func (s *TCPServer) Listen(address string) error {
 	return nil
 }
 
-func (s *TCPServer) Start() {
+func (s *TCPServer) Start(ctx context.Context) {
 	for {
-		conn, err := s.listener.Accept()
-		if err != nil {
-			s.log.Error("监听错误", "error", err)
-			continue
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			conn, err := s.listener.Accept()
+			if err != nil {
+				s.log.Error("监听错误", "error", err)
+				continue
+			}
+			s.appendConn(conn)
+			go s.serve(conn)
 		}
-		s.appendConn(conn)
-		go s.serve(conn)
 	}
 }
 func (s *TCPServer) Close() error {

@@ -5,23 +5,26 @@ import (
 	"tcpchat/logger"
 	"tcpchat/message"
 	"tcpchat/model"
-	"time"
 )
 
 type TCPClient struct {
-	reader  model.MessageReader
-	writer  model.MessageWriter
-	Name    string
-	conn    net.Conn
-	log     *logger.Logger
-	msgChan chan *model.Message
+	reader    model.MessageReader
+	writer    model.MessageWriter
+	Name      string
+	conn      net.Conn
+	log       *logger.Logger
+	onMessage func(message *model.Message)
 }
 type ClientOptions func(*TCPClient)
 
+func (c *TCPClient) WithOnMessage(onMessage func(message *model.Message)) ClientOptions {
+	return func(c *TCPClient) {
+		c.onMessage = onMessage
+	}
+}
 func NewTCPClient(opts ...ClientOptions) model.Client {
 	c := &TCPClient{
-		log:     logger.NewLogger(logger.WithGroup("tcp_client")),
-		msgChan: make(chan *model.Message, 100),
+		log: logger.NewLogger(logger.WithGroup("tcp_client")),
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -63,29 +66,30 @@ func (c *TCPClient) Close() error {
 }
 
 func (c *TCPClient) Start() {
+	// 确保 reader 和 writer 不为 nil
+	if c.reader == nil || c.writer == nil {
+		c.log.Error("reader or writer is nil")
+		return // 防止 panic
+	}
+	
+	// 确保 onMessage 回调函数不为 nil
+	if c.onMessage == nil {
+		c.log.Error("onMessage callback is nil")
+		return
+	}
+
 	c.log.Info("开启客户端消息")
 	defer c.log.Info("客户端消息结束")
-	// wait for server to be ready
-	time.Sleep(time.Second * 4)
-	for {
-		msg, err := c.reader.ReadMessage()
-		if err != nil {
-			c.log.Error("读取消息错误", "error", err)
-			return
+	
+	// 启动读取消息的 goroutine
+	go func() {
+		for {
+			message, err := c.reader.ReadMessage()
+			if err != nil {
+				c.log.Error("读取消息错误", "error", err)
+				return
+			}
+			c.onMessage(message)
 		}
-		c.log.Info("收到消息", "message", msg)
-		// todo handel message
-		c.msgChan <- msg
-		c.handelMessage(msg)
-	}
-}
-func (c *TCPClient) handelMessage(msg *model.Message) {
-	switch msg.Type {
-	case model.ChatMessage:
-		c.log.Info("收到聊天消息", "message", msg.Content)
-	case model.SystemMessage:
-		c.log.Info("收到系统消息", "message", msg.Content)
-	default:
-		c.log.Warn("收到未知类型消息", "type", msg.Type)
-	}
+	}()
 }

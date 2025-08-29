@@ -16,6 +16,7 @@ type MessageType int
 
 type Message struct {
 	Type      MessageType
+	Owner     string
 	Content   string
 	Timestamp time.Time
 }
