@@ -25,7 +25,6 @@ func WithLevel(level slog.Level) LoggerOption {
 	}
 }
 
-
 // WithName 设置组件名称（component）
 func WithName(name string) LoggerOption {
 	return func(l *Logger) {
@@ -63,4 +62,3 @@ func (l *Logger) Warn(msg string, args ...any) {
 func (l *Logger) Error(msg string, args ...any) {
 	l.logger.Error(msg, args...)
 }
-

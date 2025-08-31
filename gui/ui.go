@@ -2,7 +2,6 @@ package gui
 
 import (
 	"image/color"
-	
 	"tcpchat/client"
 	"tcpchat/model"
 
@@ -43,10 +42,10 @@ func (ui *UI) setupUI() {
 	// 服务器地址输入区域
 	ui.address = widget.NewEntry()
 	ui.address.SetPlaceHolder("请输入服务器地址 (例如: localhost:8080)")
-	
+
 	ui.username = widget.NewEntry()
 	ui.username.SetPlaceHolder("请输入用户名")
-	
+
 	ui.connect = widget.NewButton("连接", ui.connectToServer)
 
 	addressContainer := container.NewVBox(
@@ -87,7 +86,7 @@ func (ui *UI) connectToServer() {
 		ui.client.Close()
 		ui.client = nil
 	}
-	
+
 	if ui.username.Text == "" {
 		ui.addSystemMessage("请输入用户名")
 		return
@@ -103,7 +102,7 @@ func (ui *UI) connectToServer() {
 		ui.addSystemMessage("连接失败: " + err.Error())
 		return
 	}
-	
+
 	// 设置用户名
 	err = ui.client.Setname(ui.username.Text)
 	if err != nil {
@@ -175,7 +174,7 @@ func (ui *UI) addSystemMessage(content string) {
 		},
 		Text: "[系统] " + content + "\n",
 	}
-	
+
 	ui.messages.Segments = append(ui.messages.Segments, &segment)
 	ui.messages.Refresh()
 }
@@ -207,7 +206,7 @@ func (t *customTheme) Font(style fyne.TextStyle) fyne.Resource {
 	if style.Italic {
 		fontName += " Italic"
 	}
-	
+
 	// 尝试加载字体资源（如果系统安装了对应字体）
 	// 注意：fyne 不直接支持动态加载字体文件，需通过 theme.Font 返回资源
 	// 此处简化处理，使用默认字体并依赖系统字体配置

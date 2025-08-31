@@ -31,6 +31,7 @@ func NewTCPServer() model.Server {
 	}
 	return s
 }
+
 func (s *TCPServer) Listen(address string) error {
 	listener, err := net.Listen("tcp", address)
 	if err != nil {

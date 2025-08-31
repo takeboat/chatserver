@@ -24,6 +24,7 @@ type Message struct {
 type MessageReader interface {
 	ReadMessage() (*Message, error)
 }
+
 type MessageWriter interface {
 	WriteMessage(message *Message) error
 }
