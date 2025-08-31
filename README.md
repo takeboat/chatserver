@@ -16,7 +16,7 @@
 ## 技术栈
 
 - **语言**: Go
-- **GUI 框架**: Fyne
+- **GUI 框架**: [Fyne](https://www.poloxue.com/gofyne/docs/01-started/)
 - **通信协议**: TCP
 - **消息格式**: 支持 JSON 和 TLV 格式
 
