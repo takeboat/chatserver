@@ -4,25 +4,24 @@ import (
 	"bufio"
 	"encoding/json"
 	"io"
-	"tcpchat/model"
 )
 
 type JsonMessageReader struct {
 	reader *bufio.Reader
 }
 
-func NewJsonMessageReader(reader io.Reader) *JsonMessageReader {
-	return &JsonMessageReader{
-		reader: bufio.NewReader(reader),
-	}
+func NewJsonMessageReader() *JsonMessageReader {
+	return &JsonMessageReader{}
 }
 
-func (r *JsonMessageReader) ReadMessage() (*model.Message, error) {
-	line, err := r.reader.ReadBytes('\n')
+func (jmr *JsonMessageReader) ReadMessage(r io.Reader) (*Message, error) {
+	jmr.reader = bufio.NewReader(r)
+
+	line, err := jmr.reader.ReadBytes('\n')
 	if err != nil {
 		return nil, err
 	}
-	var message model.Message
+	var message Message
 	err = json.Unmarshal(line, &message)
 	if err != nil {
 		return nil, err

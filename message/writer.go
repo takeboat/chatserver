@@ -1,22 +1,21 @@
 package message
 
 import (
+	"bufio"
 	"encoding/json"
 	"io"
-	"tcpchat/model"
 )
 
 type JsonMessageWriter struct {
 	writer io.Writer
 }
 
-func NewJsonMessageWriter(writer io.Writer) *JsonMessageWriter {
-	jmw := &JsonMessageWriter{
-		writer: writer,
-	}
-	return jmw
+func NewJsonMessageWriter() *JsonMessageWriter {
+	return &JsonMessageWriter{}
 }
-func (w *JsonMessageWriter) WriteMessage(message *model.Message) error {
+func (w *JsonMessageWriter) WriteMessage(writer io.Writer, message *Message) error {
+	w.writer = bufio.NewWriter(writer)
+
 	data, err := json.Marshal(message)
 	if err != nil {
 		return err

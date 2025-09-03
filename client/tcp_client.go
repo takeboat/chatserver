@@ -5,28 +5,27 @@ import (
 	"net"
 	"tcpchat/logger"
 	"tcpchat/message"
-	"tcpchat/model"
 	"time"
 )
 
 type TCPClient struct {
-	reader    model.MessageReader
-	writer    model.MessageWriter
+	reader    message.MessageReader
+	writer    message.MessageWriter
 	Name      string
 	conn      net.Conn
 	log       *logger.Logger
-	onMessage func(message *model.Message)
+	onMessage func(message *message.Message)
 }
 
 type ClientOptions func(*TCPClient)
 
-func (c *TCPClient) WithOnMessage(onMessage func(message *model.Message)) ClientOptions {
+func (c *TCPClient) WithOnMessage(onMessage func(message *message.Message)) ClientOptions {
 	return func(c *TCPClient) {
 		c.onMessage = onMessage
 	}
 }
 
-func NewTCPClient(opts ...ClientOptions) model.Client {
+func NewTCPClient(opts ...ClientOptions) Client {
 	c := &TCPClient{
 		log:  logger.NewLogger(logger.WithGroup("tcp_client")),
 		Name: fmt.Sprintf("client_%d", time.Now().UnixNano()),
@@ -44,31 +43,31 @@ func (c *TCPClient) Dial(address string) error {
 		return err
 	}
 	c.conn = conn
-	c.reader = message.NewJsonMessageReader(conn)
-	c.writer = message.NewJsonMessageWriter(conn)
+	c.reader = message.NewJsonMessageReader()
+	c.writer = message.NewJsonMessageWriter()
 	c.log.Info("dialed", "address", address)
 	return nil
 }
 
 func (c *TCPClient) Setname(name string) error {
-	message := model.Message{
+	message := message.Message{
 		Content: name,
 		Owner:   c.Name,
-		Type:    model.SetNameMessage,
+		Type:    message.SetNameMessage,
 	}
 	c.log.Info("set name", "name", name)
 	c.Name = name
-	return c.writer.WriteMessage(&message)
+	return c.writer.WriteMessage(c.conn, &message)
 }
 
 func (c *TCPClient) SendMessage(content string) error {
-	message := model.Message{
+	message := message.Message{
 		Content: content,
 		Owner:   c.Name,
-		Type:    model.ChatMessage,
+		Type:    message.ChatMessage,
 	}
 	c.log.Info("send message", "message", content)
-	return c.writer.WriteMessage(&message)
+	return c.writer.WriteMessage(c.conn, &message)
 }
 
 func (c *TCPClient) Close() error {
@@ -88,7 +87,7 @@ func (c *TCPClient) Start() {
 	// 启动读取消息的 goroutine
 	go func() {
 		for {
-			message, err := c.reader.ReadMessage()
+			message, err := c.reader.ReadMessage(c.conn)
 			if err != nil {
 				c.log.Error("读取消息错误", "error", err)
 				return

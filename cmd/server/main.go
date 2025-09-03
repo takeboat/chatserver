@@ -26,7 +26,5 @@ func main() {
 
 	<-interrupt
 	cancel()
-	slog.Info("准备关闭服务")
-	s.Close()
 	slog.Info("服务已关闭")
 }

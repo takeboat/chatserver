@@ -3,7 +3,7 @@ package gui
 import (
 	"image/color"
 	"tcpchat/client"
-	"tcpchat/model"
+	"tcpchat/message"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -117,7 +117,7 @@ func (ui *UI) connectToServer() {
 		ui.address.Enable()
 		ui.username.Enable()
 		ui.connect.Enable()
-		ui.addSystemMessage("与服务器断开连接")
+		// ui.addSystemMessage("与服务器断开连接")
 	}()
 
 	// 连接成功后禁用地址输入和连接按钮
@@ -140,16 +140,16 @@ func (ui *UI) sendMessage() {
 	ui.input.SetText("")
 }
 
-func (ui *UI) handleMessage(message *model.Message) {
-	switch message.Type {
-	case model.ChatMessage:
-		ui.addChatMessage(message.Owner + ": " + message.Content)
-	case model.SystemMessage:
-		ui.addSystemMessage(message.Content)
-	case model.SetNameMessage:
-		ui.addSystemMessage("用户 " + message.Content + " 加入了聊天")
-	case model.LeaveMessage:
-		ui.addSystemMessage("用户 " + message.Content + " 离开了聊天")
+func (ui *UI) handleMessage(mess *message.Message) {
+	switch mess.Type {
+	case message.ChatMessage:
+		ui.addChatMessage(mess.Owner + ": " + mess.Content)
+	case message.SystemMessage:
+		ui.addSystemMessage(mess.Content)
+	case message.SetNameMessage:
+		ui.addSystemMessage("用户 " + mess.Content + " 加入了聊天")
+	case message.LeaveMessage:
+		ui.addSystemMessage("用户 " + mess.Content + " 离开了聊天")
 	}
 }
 

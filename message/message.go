@@ -1,10 +1,13 @@
-package model
+package message
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 const (
-	JoinMessage MessageType = iota
-	ChatMessage
+	JoinMessage MessageType = iota // 加入群聊
+	ChatMessage                    // 聊天消息
 	SetNameMessage
 	LeaveMessage
 	ErrorMessage
@@ -22,9 +25,9 @@ type Message struct {
 }
 
 type MessageReader interface {
-	ReadMessage() (*Message, error)
+	ReadMessage(r io.Reader) (*Message, error)
 }
 
 type MessageWriter interface {
-	WriteMessage(message *Message) error
+	WriteMessage(writer io.Writer, message *Message) error
 }
