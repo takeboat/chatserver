@@ -23,24 +23,23 @@ func WithGroup(name string) LoggerOption {
 	}
 }
 
-// GroupPrefixHandler 自定义 Handler 实现
-type GroupPrefixHandler struct {
+type myHandler struct {
 	w      io.Writer
 	opts   slog.HandlerOptions
 	groups []string
 }
 
-func NewGroupPrefixHandler(w io.Writer, opts *slog.HandlerOptions) *GroupPrefixHandler {
+func NewGroupPrefixHandler(w io.Writer, opts *slog.HandlerOptions) *myHandler {
 	if opts == nil {
 		opts = &slog.HandlerOptions{}
 	}
-	return &GroupPrefixHandler{
+	return &myHandler{
 		w:    w,
 		opts: *opts,
 	}
 }
 
-func (h *GroupPrefixHandler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h *myHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	minLevel := slog.LevelInfo
 	if h.opts.Level != nil {
 		minLevel = h.opts.Level.Level()
@@ -48,7 +47,7 @@ func (h *GroupPrefixHandler) Enabled(ctx context.Context, level slog.Level) bool
 	return level >= minLevel
 }
 
-func (h *GroupPrefixHandler) Handle(ctx context.Context, r slog.Record) error {
+func (h *myHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 构建组名字符串
 	groupStr := ""
 	if len(h.groups) > 0 {
@@ -107,9 +106,9 @@ func (h *GroupPrefixHandler) Handle(ctx context.Context, r slog.Record) error {
 	_, err := h.w.Write([]byte(output))
 	return err
 }
-func (h *GroupPrefixHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (h *myHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	// 创建新 Handler 副本
-	newHandler := &GroupPrefixHandler{
+	newHandler := &myHandler{
 		w:      h.w,
 		opts:   h.opts,
 		groups: make([]string, len(h.groups)),
@@ -118,9 +117,9 @@ func (h *GroupPrefixHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return newHandler
 }
 
-func (h *GroupPrefixHandler) WithGroup(name string) slog.Handler {
+func (h *myHandler) WithGroup(name string) slog.Handler {
 	// 创建新 Handler 副本
-	newHandler := &GroupPrefixHandler{
+	newHandler := &myHandler{
 		w:      h.w,
 		opts:   h.opts,
 		groups: make([]string, len(h.groups), len(h.groups)+1),
